@@ -7,6 +7,154 @@ var words = {};
  */
 function emptyStack(stack) {
     // ...
+    stack.length = 0;
+}
+
+/* //reset button and emptyStack()
+var resetButton = $("#reset"); // resetButton now references 
+                               // the HTML button with ID "reset"
+$("#reset").click(function() {
+  $( stack ).emptyStack();
+});
+*/
+
+function getTop(stack){
+    return stack[stack.length -1];
+}
+
+function add(stack){
+    if (stack.length >= 2) {
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+    stack.push(first + second);
+    }
+    else{
+        print(terminal, "Error: Addition requires two operands.");
+    } 
+}
+
+function subtract(stack){
+    if (stack.length >= 2) {
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+    stack.push(first - second);
+    }
+    else{
+        print(terminal, "Error: Subtraction requires two operands.");
+    } 
+}
+
+function multiply(stack){
+    if (stack.length >= 2) {
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+    stack.push(first * second);
+    }
+    else{
+        print(terminal, "Error: Multiplication requires two operands.");
+    } 
+}
+
+function divide(stack){
+    if (stack.length >= 2) {
+    int second = stack.getTop;
+    stack.pop();
+    int first = stack.getTop;
+    stack.pop();
+    stack.push(first / second);
+    }
+    else{
+        print(terminal, "Error: Division requires two operands.");
+    } 
+}
+
+/*
+function sub(stack){
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+    stack.push(first + second);
+}
+*/
+
+function nip(stack){
+    if (stack.length == 0) {print(terminal, "Error: Nip called on an empty stack");}
+    else if (stack.length == 1) {stack.pop();}
+    else{
+        var origTop = stack.getTop();
+        stack.pop();
+        stack.pop();
+        stack.push(origTop);
+    }
+}
+
+function swap(stack){
+    if (stack.length == 1) {stack.pop(); stack.push(0);}
+    else if (stack.length > 1){
+        var origTop = stack.getTop();
+        stack.pop();
+        var second = stack.getTop();
+        stack.pop();
+        stack.push(origTop);
+        stack.push(second);
+    }
+}
+
+function over(stack){
+    if (stack.length < 2) {stack.push(0);}
+    else {
+        var origTop = stack.getTop();
+        stack.pop();
+        var second = stack.getTop();
+        stack.push(origTop);
+        stack.push(second);
+    }
+}
+
+function greaterThan(stack){
+    if (stack.length == 0) {print(terminal, "Error: > called on empty stack.");}
+    else if (stack.length == 1) {stack.pop();}
+    else{
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+        if (first > second){stack.push(-1);}
+        else{stack.push(0);}
+    }
+}
+
+function equal(stack){
+   if (stack.length == 0) {print(terminal, "Error: = called on empty stack.");}
+    else if (stack.length == 1) {stack.pop();}
+    else{
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+        if (first == second){stack.push(-1);}
+        else{stack.push(0);}
+    }
+}
+
+function lessThan(stack){
+    if (stack.length == 0) {print(terminal, "Error: < called on empty stack.");}
+    else if (stack.length == 1) {stack.pop();}
+    else{
+    var second = stack.getTop;
+    stack.pop();
+    var first = stack.getTop;
+    stack.pop();
+        if (first < second){stack.push(-1);}
+        else{stack.push(0);}
+    }
 }
 
 /**
@@ -25,6 +173,7 @@ function print(terminal, msg) {
  * Sync up the HTML with the stack in memory
  * @param {Array[Number]} The stack to render
  */
+
 function renderStack(stack) {
     $("#thestack").empty();
     stack.reverse().forEach(function(element) {
@@ -39,10 +188,11 @@ function renderStack(stack) {
  * @param {string} input - The string the user typed
  * @param {Terminal} terminal - The terminal object
  */
+
 function process(stack, input, terminal) {
     // The user typed a number
     if (!(isNaN(Number(input)))) {
-        print(terminal,"pushing " + Number(input));
+        print(terminal,"pushing " + Number(input)); //convert string into number
         stack.push(Number(input));
     } else if (input === ".s") {
         print(terminal, " <" + stack.length + "> " + stack.join(" "));
