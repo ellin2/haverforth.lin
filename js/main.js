@@ -1,6 +1,29 @@
 // See the following on using objects as key/value dictionaries
 // https://stackoverflow.com/questions/1208222/how-to-do-associative-array-hashing-in-javascript
-var words = {};
+var predef = {"+" : add, 
+              "-" : subtract, 
+              "*" : multiply, 
+              "/" : divide, 
+              "nip" : nip, 
+              "swap" : swap, 
+              "over" : over, 
+              ">" : greaterThan, 
+              "=" : equal, 
+              "<" : lessThan
+             };
+/*
+predef["-"] = subtract;
+predef["*"] = multiply;
+predef["/"] = divide;
+predef["nip"] = nip;
+predef["swap"] = swap;
+predef["over"] = over;
+predef[">"] = greaterThan;
+predef["="] = equal;
+predef["<"] = lessThan;
+*/
+
+var userDict = {};
 
 /** 
  * Your thoughtful comment here.
@@ -10,13 +33,9 @@ function emptyStack(stack) {
     stack.length = 0;
 }
 
-/* //reset button and emptyStack()
 var resetButton = $("#reset"); // resetButton now references 
                                // the HTML button with ID "reset"
-$("#reset").click(function() {
-  $( stack ).emptyStack();
-});
-*/
+$("#reset").click(function() {stack.length = 0;}
 
 function getTop(stack){
     return stack[stack.length -1];
@@ -24,9 +43,9 @@ function getTop(stack){
 
 function add(stack){
     if (stack.length >= 2) {
-    var second = stack.getTop;
+    var second = getTop(stack);
     stack.pop();
-    var first = stack.getTop;
+    var first = getTop(stack);
     stack.pop();
     stack.push(first + second);
     }
@@ -37,9 +56,9 @@ function add(stack){
 
 function subtract(stack){
     if (stack.length >= 2) {
-    var second = stack.getTop;
+    var second = getTop(stack);
     stack.pop();
-    var first = stack.getTop;
+    var first = getTop(stack);
     stack.pop();
     stack.push(first - second);
     }
@@ -50,9 +69,9 @@ function subtract(stack){
 
 function multiply(stack){
     if (stack.length >= 2) {
-    var second = stack.getTop;
+    var second = getTop(stack);
     stack.pop();
-    var first = stack.getTop;
+    var first = getTop(stack);
     stack.pop();
     stack.push(first * second);
     }
@@ -63,9 +82,9 @@ function multiply(stack){
 
 function divide(stack){
     if (stack.length >= 2) {
-    int second = stack.getTop;
+    int second = getTop(stack);
     stack.pop();
-    int first = stack.getTop;
+    int first = getTop(stack);
     stack.pop();
     stack.push(first / second);
     }
@@ -74,21 +93,11 @@ function divide(stack){
     } 
 }
 
-/*
-function sub(stack){
-    var second = stack.getTop;
-    stack.pop();
-    var first = stack.getTop;
-    stack.pop();
-    stack.push(first + second);
-}
-*/
-
 function nip(stack){
     if (stack.length == 0) {print(terminal, "Error: Nip called on an empty stack");}
     else if (stack.length == 1) {stack.pop();}
     else{
-        var origTop = stack.getTop();
+        var origTop = getTop(stack);
         stack.pop();
         stack.pop();
         stack.push(origTop);
@@ -98,9 +107,9 @@ function nip(stack){
 function swap(stack){
     if (stack.length == 1) {stack.pop(); stack.push(0);}
     else if (stack.length > 1){
-        var origTop = stack.getTop();
+        var origTop = getTop(stack);
         stack.pop();
-        var second = stack.getTop();
+        var second = getTop(stack);
         stack.pop();
         stack.push(origTop);
         stack.push(second);
@@ -110,9 +119,9 @@ function swap(stack){
 function over(stack){
     if (stack.length < 2) {stack.push(0);}
     else {
-        var origTop = stack.getTop();
+        var origTop = getTop(stack);
         stack.pop();
-        var second = stack.getTop();
+        var second = getTop(stack);
         stack.push(origTop);
         stack.push(second);
     }
@@ -122,9 +131,9 @@ function greaterThan(stack){
     if (stack.length == 0) {print(terminal, "Error: > called on empty stack.");}
     else if (stack.length == 1) {stack.pop();}
     else{
-    var second = stack.getTop;
+    var second = getTop(stack);
     stack.pop();
-    var first = stack.getTop;
+    var first = getTop(stack);
     stack.pop();
         if (first > second){stack.push(-1);}
         else{stack.push(0);}
@@ -135,9 +144,9 @@ function equal(stack){
    if (stack.length == 0) {print(terminal, "Error: = called on empty stack.");}
     else if (stack.length == 1) {stack.pop();}
     else{
-    var second = stack.getTop;
+    var second = getTop(stack);
     stack.pop();
-    var first = stack.getTop;
+    var first = getTop(stack);
     stack.pop();
         if (first == second){stack.push(-1);}
         else{stack.push(0);}
@@ -148,9 +157,9 @@ function lessThan(stack){
     if (stack.length == 0) {print(terminal, "Error: < called on empty stack.");}
     else if (stack.length == 1) {stack.pop();}
     else{
-    var second = stack.getTop;
+    var second = getTop(stack);
     stack.pop();
-    var first = stack.getTop;
+    var first = getTop(stack);
     stack.pop();
         if (first < second){stack.push(-1);}
         else{stack.push(0);}
@@ -191,25 +200,51 @@ function renderStack(stack) {
 
 function process(stack, input, terminal) {
     // The user typed a number
+    print(terminal, input);
+    
     if (!(isNaN(Number(input)))) {
-        print(terminal,"pushing " + Number(input)); //convert string into number
+        print(terminal, "pushing " + Number(input)); //convert string into number
         stack.push(Number(input));
-    } else if (input === ".s") {
-        print(terminal, " <" + stack.length + "> " + stack.join(" "));
-    } else if (input === "+") {
+    } else if (input === ".s") { //check that this works properly
+        print(terminal, " <" + stack.length + "> " + stack.reverse().join(" "));
+    } else { //this is new: 
+        if (input in userDict){
+            print(terminal, "executing " + input + "on the stack");
+            var def = userDict[input];
+            process(stack, def, terminal) //tricky tricky?
+        }
+        else if (input in predef){
+            print(terminal, "executing " + input + "on the stack"); 
+            var def = predef[input];
+            stack = def(stack);
+        }
+        else if (input === ":") { //this is new:
+            print(terminal, "reading in user-defined function definition"); 
+            var name = ;
+            print(terminal, "name: " + name); 
+            var def = ;
+            print(terminal, "definition: " + def); 
+            userDict["name"] = def;
+            print(terminal, "thank you for defining the function " + name); 
+        }
+        else {
+            print(terminal, ":( Unrecognized input");
+        }
+    }
+    /*
+    } else if (input === "+") { //this can probably be deleted:
         var first = stack.pop();
         var second = stack.pop();
         stack.push(first+second);
-    } else {
-        print(terminal, ":-( Unrecognized input");
-    }
+    */
     renderStack(stack);
 };
 
 function runRepl(terminal, stack) {
     terminal.input("Type a forth command:", function(line) {
         print(terminal, "User typed in: " + line);
-        process(stack, line, terminal);
+        var tokens = line.trim().split(/ +/); //new var "tokens" that is an array of strings
+        process(stack, tokens, terminal); //changed "line" to "tokens"
         runRepl(terminal, stack);
     });
 };
