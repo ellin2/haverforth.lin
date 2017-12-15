@@ -1,0 +1,14 @@
+Emily Lin 
+Lab 7E, Parts 7 and 8
+
+Part 7: Debugging
+The screenshot shows that the most recent user input was a “*”. I set a breakpoint in the multiply function to make sure that the program was calling and entering the correct function. The debugger confirmed that it was. I appreciated working with the JavaScript debugger because I was able to easily set breakpoints, the debugger maintained a list of the breakpoints I had set, and it also showed the call stack and scope of variables. by By giving me clear visuals, the debugger helped me keep track of what was being called and confirmed whether objects were being used and passed properly (or at all). 
+
+Part 8: Comparison to C++
+Instead of using cin and stringstream, I used trim and split to make the user input into an array of strings. Instead of using while loops to iterate through the tokens and search for the functions, I used forEach and a key/value data structure for lookups.
+
+I learned that even though I’ve already done parts of the stack assignment in C++ and Racket, learning JavaScript syntax can still take a lot of time. When I was initializing a variable called “first” in my functions, I accidentally typed “int first” instead of “var first” because I was used to C++’s requirement of types. I didn’t realize that JavaScript would complain about this. My error prevented my program from running, and it took me a minute to figure out why.
+
+JavaScript’s lack of types was surprising because it is important to keep track of types in order to prevent mistakes with manipulating and passing objects. However, the lack of types was especially convenient and time-saving when I didn’t need to specify function types by writing function<void(stack)>, for example. The fact that all variables/objects are all initialized with “var” still throws me off though. Each object may be a completely different type, and initializing them all with "var" makes it easy to forget their types. Generally, I prefer to work in a language that requires types so that I can easily find inconsistencies (or prevent them to begin with!) before runtime.
+
+Instead of using a stack object, this lab involved using and changing an array. I did not use std::map in C++, but I believe that the key/value data structure used for looking up functions is very similar. The empty array served as the prototype of the stack, just as an empty stack object did in C++. Whereas C++ involved static typing, JavaScript involved dynamic typing. I did not use closures in C++, but I used closures when calling click() and forEach().
