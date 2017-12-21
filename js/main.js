@@ -4,23 +4,67 @@
 //https://stackoverflow.com/questions/25242397/initialize-array-in-javascript-constructor
 // initialize array in class constructor
 
-/*
+
 //Final, part 9
 class Stack {
   constructor() { //creates an empty stack
-    //this.length = 0;
     this.array = [];
+    this.length = this.array.length;
+    //https://solidfoundationwebdev.com/blog/posts/3-methods-to-get-the-last-element-of-an-array-in-javascript
+    this.top = this.array.slice(-1)[0];
   }
   pop() {
-    //this.length -= 1;
-    return this.array.pop();
+    var top = this.top;
+    this.array.pop(); //removed return
+    this.length -= 1;
+    this.top = this.array.slice(-1)[0];
+    this.execute(this); //execute is my notify function for the observer pattern
+    return top;
   }
   push(number) {
     this.array.push(number);
-    //this.length += 1;
+    this.length += 1;
+    this.top = this.array.slice(-1)[0];
+    this.execute(this);
   }
 }
-*/
+
+//http://www.dofactory.com/javascript/observer-design-pattern
+//regarding observer function
+
+//https://stackoverflow.com/questions/31067368/javascript-es6-class-extend-without-super
+//re: super();
+
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
+//re: classes and inheritance
+
+//subject of my observer pattern
+class ObservableStack extends Stack {
+  constructor() {
+    super();
+    this.observers = [];}
+  registerObserver(observer){
+    this.observers.push(observer);
+  }
+  execute(arg){
+    //for each observer in the list of observers, call it
+    //currently, my observers must all take a stack object as an argument
+    //this can easily be changed
+    this.observers.forEach(function(item){
+      item(arg);});
+  }
+}
+
+//Each time the stack changes,
+//your subclass should call observer with the current stack.
+
+//Note that for full credit,
+//you should be able to register a list of observers.
+
+//Use registerObserver to register a function which calls renderStack
+//for each change to the stack so that you don't have to continually call it.
+//ObservableStack.prototype.registerObserver = function(observer) {observer(stack);};
+
 
 //key/value data structure of name-function pairs for built-in functions
 var predef = {"+" : add,
@@ -35,17 +79,18 @@ var predef = {"+" : add,
               "<" : lessThan
              };
 
+//var conditional = {"if" : ifExecute}
+
 //key/value data structure for user-defined functions
 var userDict = {};
 
-//stack is an array
+//stack is an ObservableStack
 function emptyStack(stack) {
-    stack.length = 0;
-    //while(stack.length > 0) {  stack.pop(); }
-    renderStack(stack);
+    while(stack.length > 0) { stack.pop(); }
+    stack.length = 0;       //update size of stack
 }
 
-//stack is an array
+//stack is an ObservableStack
 function add(stack){
     if (stack.length >= 2) {
       var second = stack.pop();
@@ -53,11 +98,11 @@ function add(stack){
       stack.push(first + second);
     }
     else{
-        print(terminal, "Error: Addition requires two operands.");
+        console.log("Error: Addition requires two operands.");
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function subtract(stack){
   if (stack.length >= 2) {
     var second = stack.pop();
@@ -65,11 +110,11 @@ function subtract(stack){
     stack.push(first - second);
   }
     else{
-        print(terminal, "Error: Subtraction requires two operands.");
+        console.log("Error: Subtraction requires two operands.");
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function multiply(stack){
   if (stack.length >= 2) {
     var second = stack.pop();
@@ -77,11 +122,11 @@ function multiply(stack){
     stack.push(first * second);
   }
     else{
-        print(terminal, "Error: Multiplication requires two operands.");
+        console.log("Error: Multiplication requires two operands.");
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function divide(stack){
   if (stack.length >= 2) {
     var second = stack.pop();
@@ -89,13 +134,13 @@ function divide(stack){
     stack.push(first / second);
   }
     else{
-        print(terminal, "Error: Division requires two operands.");
+        console.log("Error: Division requires two operands.");
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function nip(stack){
-    if (stack.length == 0) {print(terminal, "Error: Nip called on an empty stack");}
+    if (stack.length == 0) {console.log("Error: Nip called on an empty stack");}
     else if (stack.length == 1) {stack.pop();}
     else{
         var origTop = stack.pop();
@@ -104,7 +149,7 @@ function nip(stack){
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function swap(stack){
     if (stack.length == 1) {stack.pop(); stack.push(0);}
     else if (stack.length > 1){
@@ -115,7 +160,7 @@ function swap(stack){
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function over(stack){
     if (stack.length < 2) {stack.push(0);}
     else {
@@ -127,9 +172,9 @@ function over(stack){
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function greaterThan(stack){
-    if (stack.length == 0) {print(terminal, "Error: > called on empty stack.");}
+    if (stack.length == 0) {console.log("Error: > called on empty stack.");}
     else if (stack.length == 1) {stack.pop();}
     else{
     var second = stack.pop();
@@ -139,9 +184,9 @@ function greaterThan(stack){
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function equal(stack){
-   if (stack.length == 0) {print(terminal, "Error: = called on empty stack.");}
+   if (stack.length == 0) {console.log("Error: = called on empty stack.");}
     else if (stack.length == 1) {stack.pop();}
     else{
     var second = stack.pop();
@@ -151,9 +196,9 @@ function equal(stack){
     }
 }
 
-//stack is an array
+//stack is an ObservableStack
 function lessThan(stack){
-    if (stack.length == 0) {print(terminal, "Error: < called on empty stack.");}
+    if (stack.length == 0) {console.log("Error: < called on empty stack.");}
     else if (stack.length == 1) {stack.pop();}
     else{
     var second = stack.pop();
@@ -182,10 +227,97 @@ function print(terminal, msg) {
 
 function renderStack(stack) {
     $("#thestack").empty();
-    stack.slice().reverse().forEach(function(element) {
+    //changed stack.slice() to stack.array.slice()
+    stack.array.slice().reverse().forEach(function(element) {
         $("#thestack").append("<tr><td>" + element + "</td></tr>");
     });
 };
+
+function ifSkip(input){
+  console.log("skipping nested ifs");
+  var index = 0;
+  input.splice(0, 1); //remove current/first element, which is "if"
+  //https://stackoverflow.com/questions/2003815/how-to-remove-element-from-an-array-in-javascript
+  while (input.length > 0 && input[index] != "endif"){
+    if (input[index] == "if") {ifSkip(input);}
+    input.splice(0, 1); //remove current/first element
+    //index += 1;
+  }
+}
+
+function elseSkip(input){
+  console.log("skipping nested elses");
+  var index = 0;
+  input.splice(0, 1); //remove current/first element, which is "else"
+  while (input.length > 0 && input[index] != "endif"){
+    if (input[index] == "else") {elseSkip(input);}
+    input.splice(0, 1); //remove current/first element
+    //index += 1;
+  }
+}
+
+function ifExecute(stack, input, terminal){
+  //here, input is an array!
+  console.log("begin ifExecute");
+  console.log(input);
+  var token = input[0];
+  console.log(token); //should be if
+  if (stack.length == 0) {console.log("Error: stack underflow. If condition cannot be checked. Call terminated.");}
+  else {
+    //var token = input[0];
+    if (stack.top == 0){ //condition failed
+      stack.pop(); //consume flag
+      input.splice(0, 1); //remove current/first element, which is "if"
+      token = input[0]; //must update token
+      console.log("condition failed, skipping to else");
+      while (input.length > 0 && token != "else"){
+        console.log(input);
+        console.log(token);
+        if (token == "if") {ifSkip(input);}
+        input.splice(0, 1); //remove current/first element
+        token = input[0]; //must update token
+      }
+      console.log(token); //should be else
+      input.splice(0, 1); //remove current/first element, which is else
+      token = input[0]; //must update token to be the one after else
+      while (input.length > 0 && token != "endif"){
+        if (token == "if") {ifExecute(input);}
+        else {process(stack, token, terminal);}
+        //https://stackoverflow.com/questions/12132178/using-join-method-to-convert-array-to-string-without-commas
+        //else {process(stack, input.join(" "), terminal);}
+        input.splice(0, 1); //remove current/first element
+        token = input[0]; //must update token
+      }
+      console.log(token); //should be endif
+      input.splice(0, 1); //remove current/first element, which is endif
+      console.log(input); //should be everything after endif, if anything
+    }
+    else {          //condition passed
+      stack.pop();  //consume flag
+      input.splice(0, 1); //remove current/first element, which is "if"
+      token = input[0]; //must update token
+      console.log("condition passed, executing if");
+      while (input.length > 0 && token != "else"){
+        if (token == "if") {ifExecute(input);}
+        else {process(stack, token, terminal);}
+        //else {process(stack, input.join(" "), terminal);}
+        input.splice(0, 1); //remove current/first element
+        token = input[0]; //must update token
+      }
+      console.log(token); //should be else
+      input.splice(0, 1); //remove current/first element, which is else
+      token = input[0]; //must update token to be the one after else
+      while (input.length > 0 && token != "endif"){
+        if (token == "else") {elseSkip(input);}
+        input.splice(0, 1); //remove current/first element
+        token = input[0]; //must update token
+      }
+      console.log(token); //should be endif
+      input.splice(0, 1); //remove current/first element, which is endif
+      console.log(input); //should be everything after endif, if anything
+    }
+  }
+}
 
 
 //https://stackoverflow.com/questions/43295840/javascript-how-to-start-foreach-loop-at-some-index
@@ -202,7 +334,9 @@ function renderStack(stack) {
  * @param {Terminal} terminal - The terminal object
  */
 function process(stack, input, terminal) {
-  var input = input.trim().split(/ +/); //new var "tokens" that is an array of strings
+  //forgot that input starts out as a STRING, not an array!!
+  console.log(input); //added for debugging
+  var input = input.trim().split(/ +/); //convert input string into an array
   if (input[0] === ":"){
     print(terminal, "reading in user-defined function");
     var name = input[1];
@@ -214,49 +348,60 @@ function process(stack, input, terminal) {
     print(terminal, "definition: " + def);
     userDict[name] = def;
     print(terminal, "thank you for defining the function " + name);
-    
-    /*
+
     //Final, part 8, dynamically generating buttons
     //https://codepen.io/davidcochran/pen/WbWXoa
-    //the below works
     // 1. Create the button
     var button = document.createElement("button");
     button.innerHTML = name;
-
     // 2. Append somewhere
     var body = document.getElementsByTagName("body")[0];
     body.appendChild(button);
-
     // 3. Add event handler
     button.addEventListener ("click", function() {
       process(stack, userDict[name], terminal);
     });
-    */
   }
+  //else if (current == "if"){ifExecute(stack, input, terminal);}
   else{
-    input.forEach(function(input){ //(stack, tokens, terminal)); //changed "line" to "tokens"
+    input.forEach(function(token, index){
+    //token is each command in the array "input"
     // The user typed a number
-    if (!(isNaN(Number(input)))) {
-        print(terminal, "pushing " + Number(input)); //convert string into number
-        stack.push(Number(input));
-    } else if (input === ".s") { //check that this works properly
-        print(terminal, " <" + stack.length + "> " + stack.slice().join(" "));
-    } else { //this is new:
-        if (input in userDict){
-            print(terminal, "executing " + input + " on the stack");
-            var def = userDict[input];
+    if (!(isNaN(Number(token)))) {
+        print(terminal, "pushing " + Number(token)); //convert string into number
+        stack.push(Number(token));
+        //input.splice(0, 1); //added
+    }
+    else if (token === "if"){
+      console.log("index: " + index);
+      input.splice(0, index);
+      ifExecute(stack, input, terminal);
+      //input.join to convert array into string
+      process(stack, input.join(" "), terminal);
+    }
+    else if (token === ".s") { //check that this works properly
+        //changed stack.slice() to stack.array.slice()
+        print(terminal, " <" + stack.length + "> " + stack.array.slice().join(" "));
+        //input.splice(0, 1); //added
+    }
+    else {
+        if (token in userDict){
+            print(terminal, "executing " + token + " on the stack");
+            var def = userDict[token];
             process(stack, def, terminal) //tricky tricky?
+            //input.splice(0, 1); //added
         }
-        else if (input in predef){
-            print(terminal, "executing " + input + " on the stack");
-            var def = predef[input];
+        else if (token in predef){
+            print(terminal, "executing " + token + " on the stack");
+            var def = predef[token];
             def(stack);
+            //input.splice(0, 1); //added
         }
         else {
             print(terminal, ":( Unrecognized input");
+            //input.splice(0, 1); //added
         }
     }
-  renderStack(stack);
   });}
 };
 
@@ -277,10 +422,17 @@ function runRepl(terminal, stack) {
 
 // Whenever the page is finished loading, call this function.
 // See: https://learn.jquery.com/using-jquery-core/document-ready/
+
+//https://en.wikipedia.org/wiki/Observer_pattern
+//re: observer pattern
+
 $(document).ready(function() {
     var terminal = new Terminal();
-    var stack = [];
-    //var stack = new Stack();
+    //var stack = [];
+    var stack = new ObservableStack();
+    var render = function(stack){renderStack(stack);};
+    stack.registerObserver(render);
+
     var resetButton = $("#reset"); // resetButton now references
                                    // the HTML button with ID "reset"
     terminal.setHeight("400px");
