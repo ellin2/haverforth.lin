@@ -6,6 +6,10 @@
 
 
 //Final, part 9
+/**
+ * stack class
+ * @param {integer}   number  - number to push onto the stack
+ */
 class Stack {
   constructor() { //creates an empty stack
     this.array = [];
@@ -38,7 +42,11 @@ class Stack {
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 //re: classes and inheritance
 
-//subject of my observer pattern
+/**
+ * observable stack class
+ * subject for observer patter
+ * @param {ObservableStack}   arg  - stack object to perform operations on
+ */
 class ObservableStack extends Stack {
   constructor() {
     super();
@@ -48,8 +56,7 @@ class ObservableStack extends Stack {
   }
   execute(arg){
     //for each observer in the list of observers, call it
-    //currently, my observers must all take a stack object as an argument
-    //this can easily be changed
+    //currently, the observers must all take a stack object as an argument
     this.observers.forEach(function(item){
       item(arg);});
   }
@@ -79,12 +86,11 @@ var predef = {"+" : add,
               "<" : lessThan
              };
 
-//var conditional = {"if" : ifExecute}
-
 //key/value data structure for user-defined functions
 var userDict = {};
 
 //stack is an ObservableStack
+//function empties the current stack (does not create a new one)
 function emptyStack(stack) {
     while(stack.length > 0) { stack.pop(); }
     stack.length = 0;       //update size of stack
@@ -222,7 +228,7 @@ function print(terminal, msg) {
 
 /**
  * Sync up the HTML with the stack in memory
- * @param {Array[Number]} The stack to render
+ * @param {ObservableStack} stack - the stack to render
  */
 
 function renderStack(stack) {
@@ -233,8 +239,12 @@ function renderStack(stack) {
     });
 };
 
+/**
+ * skip nested ifs
+ * @param {Array[string]}   input  - user input/commands to execute
+ */
 function ifSkip(input){
-  console.log("skipping nested ifs");
+  console.log("Skipping nested ifs");
   var index = 0;
   input.splice(0, 1); //remove current/first element, which is "if"
   //https://stackoverflow.com/questions/2003815/how-to-remove-element-from-an-array-in-javascript
@@ -245,8 +255,12 @@ function ifSkip(input){
   }
 }
 
+/**
+ * skip nested elses
+ * @param {Array[string]}   input  - user input/commands to execute
+ */
 function elseSkip(input){
-  console.log("skipping nested elses");
+  console.log("Skipping nested elses");
   var index = 0;
   input.splice(0, 1); //remove current/first element, which is "else"
   while (input.length > 0 && input[index] != "endif"){
@@ -256,20 +270,28 @@ function elseSkip(input){
   }
 }
 
+/**
+ * execute/process conditional
+ * @param {ObservableStack} stack
+ * @param {Array[string]}   input  - user input/commands to execute
+ * @param {Terminal} terminal
+ */
 function ifExecute(stack, input, terminal){
   //here, input is an array!
-  console.log("begin ifExecute");
+  console.log("Beginning ifExecute");
   console.log(input);
   var token = input[0];
   console.log(token); //should be if
-  if (stack.length == 0) {console.log("Error: stack underflow. If condition cannot be checked. Call terminated.");}
+  if (stack.length == 0) {
+    input.length = 0;
+    console.log("Error: stack underflow. If condition cannot be checked. Call terminated.");}
   else {
     //var token = input[0];
     if (stack.top == 0){ //condition failed
       stack.pop(); //consume flag
       input.splice(0, 1); //remove current/first element, which is "if"
       token = input[0]; //must update token
-      console.log("condition failed, skipping to else");
+      console.log("Condition failed, skipping to else");
       while (input.length > 0 && token != "else"){
         console.log(input);
         console.log(token);
@@ -296,7 +318,7 @@ function ifExecute(stack, input, terminal){
       stack.pop();  //consume flag
       input.splice(0, 1); //remove current/first element, which is "if"
       token = input[0]; //must update token
-      console.log("condition passed, executing if");
+      console.log("Condition passed, executing if");
       while (input.length > 0 && token != "else"){
         if (token == "if") {ifExecute(input);}
         else {process(stack, token, terminal);}
@@ -329,7 +351,7 @@ function ifExecute(stack, input, terminal){
 /**
  * Process a user input, update the stack accordingly, write a
  * response out to some terminal.
- * @param {Array[Number]} stack - The stack to work on
+ * @param {ObservableStack} stack - The stack to work on
  * @param {string} input - The string the user typed
  * @param {Terminal} terminal - The terminal object
  */
@@ -338,31 +360,41 @@ function process(stack, input, terminal) {
   console.log(input); //added for debugging
   var input = input.trim().split(/ +/); //convert input string into an array
   if (input[0] === ":"){
-    print(terminal, "reading in user-defined function");
+    print(terminal, "Reading in user-defined function");
     var name = input[1];
-    print(terminal, "name: " + name);
+    print(terminal, "Name: " + name);
     var def = "";
+    var ifCount = 0;
+    var elseCount = 0;
+    var endifCount = 0;
     input.slice(2, input.length - 1).forEach(function(input){
+      if (input == "if") {ifCount += 1;}
+      else if (input == "else") {elseCount += 1;}
+      else if (input == "endif") {endifCount += 1;}
       def += input + " ";
     });
-    print(terminal, "definition: " + def);
-    userDict[name] = def;
-    print(terminal, "thank you for defining the function " + name);
-
-    //Final, part 8, dynamically generating buttons
-    //https://codepen.io/davidcochran/pen/WbWXoa
-    // 1. Create the button
-    var button = document.createElement("button");
-    button.innerHTML = name;
-    // 2. Append somewhere
-    var body = document.getElementsByTagName("body")[0];
-    body.appendChild(button);
-    // 3. Add event handler
-    button.addEventListener ("click", function() {
-      process(stack, userDict[name], terminal);
-    });
+    print(terminal, "Definition: " + def);
+    if (ifCount == elseCount && elseCount == endifCount){
+      userDict[name] = def;
+      print(terminal, "Thank you for defining the function " + name);
+      //Final, part 8, dynamically generating buttons
+      //https://www.w3schools.com/jsref/dom_obj_div.asp
+      // creating buttons in the desired location
+      //https://codepen.io/davidcochran/pen/WbWXoa
+      // code below
+      // 1. Create the button
+      var button = document.createElement("button");
+      button.innerHTML = name;
+      // 2. Append next to "User defined functions: " udf
+      var udf = document.getElementById("user-defined-funcs"); //
+      udf.appendChild(button);
+      // 3. Add event handler
+      button.addEventListener ("click", function() {
+        process(stack, userDict[name], terminal);
+      });
+    }
+    else {print(terminal, "Error: mismatch detected in conditional structure. Definition will not be saved.")}
   }
-  //else if (current == "if"){ifExecute(stack, input, terminal);}
   else{
     input.forEach(function(token, index){
     //token is each command in the array "input"
@@ -376,30 +408,27 @@ function process(stack, input, terminal) {
       console.log("index: " + index);
       input.splice(0, index);
       ifExecute(stack, input, terminal);
+      if (stack.length != 0){
       //input.join to convert array into string
-      process(stack, input.join(" "), terminal);
+      process(stack, input.join(" "), terminal);}
     }
     else if (token === ".s") { //check that this works properly
         //changed stack.slice() to stack.array.slice()
         print(terminal, " <" + stack.length + "> " + stack.array.slice().join(" "));
-        //input.splice(0, 1); //added
     }
     else {
         if (token in userDict){
-            print(terminal, "executing " + token + " on the stack");
+            print(terminal, "Executing " + token + " on the stack");
             var def = userDict[token];
             process(stack, def, terminal) //tricky tricky?
-            //input.splice(0, 1); //added
         }
         else if (token in predef){
-            print(terminal, "executing " + token + " on the stack");
+            print(terminal, "Executing " + token + " on the stack");
             var def = predef[token];
             def(stack);
-            //input.splice(0, 1); //added
         }
         else {
             print(terminal, ":( Unrecognized input");
-            //input.splice(0, 1); //added
         }
     }
   });}
