@@ -1,0 +1,22 @@
+Lab 7E Final, Part 13 Reflection 
+//What was the most challenging part of this lab?
+The most challenging parts of the lab were figuring out what I needed to accomplish (ex. how observer patterns work), learning how to properly use JavaScript syntax and built-in functions, and keeping track of types. 
+
+//What did you enjoy most about JavaScript?
+I love that it works with HTML to allow for better user experience (ex. the buttons). Also, I liked that I could print messages in the console and in the terminal separately.
+
+//What did you least enjoy about JavaScript?
+The lack of types (and my forgetting of them) delayed my progress since I was trying to call functions on objects of the wrong type. 
+
+//Do you think you would choose JavaScript over other languages for this task? What other language would you have chosen to implement the interpreter in, and why?
+I enjoyed working on this project in C++ more since the strict types and requirement of header files for classes helped with debugging. Conforming to the strictness of C++ was tedious, but it helped with organization. However, I would like to become more familiar with JavaScript because I believe that it allows for more flexibility and different features that C++ may not support. 
+
+//Did the lack of type safety hurt you on this lab? Were there any points at which you got tripped up by not having types?
+The lack of type safety definitely impeded my progress. For example, I changed the type of the variable “input” a few times and lost track of what type it was at the beginning of the function “process.” This caused my program to crash when it tried calling trim() on an array instead of a string. Also, I originally created a function top() in my stack class, but when I tried calling it outside of the stack class, the console complained that stack.top() wasn’t a function.
+
+//Were any of the concepts used in class helpful to you completing this project, even though this lab is in JavaScript (vs //Racket / C++)?
+Concepts such as commenting and keeping track of where/what the token was was helpful in thinking about this project. Learning about closures was also helpful. 
+
+//If you could add one feature to this application, but don't have time / know-how to do so, what would it be? What concepts //from the class do you envision could help get you there?
+I would write code to allow users to draw various shapes and color them on a canvas. I’m not sure what specific concepts from class would help except being resourceful, debugging using the smallest case and then building up, and commenting sufficiently (particularly for types). I expect that class inheritance would be involved as well.
+
